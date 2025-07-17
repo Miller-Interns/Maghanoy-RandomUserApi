@@ -28,15 +28,20 @@
           <!-- The Left Page -->
           <div class="page left-page">
             <h2>JUST SEARCH!</h2>
-            <input type='number' v-model='numPhotos' placeholder='Number of Photos'>
+            <input type='number' v-model='numPhotosToFetch' placeholder='Number of Photos'>
             <button @click='userPerPage' class='submit' value="submit">
-
             </button>
+
+
+            <div v-for="user in displayedUsers" :key="user.login.uuid" class="picture-card">
+              <img :src="user.picture.large" :alt="`Photo of ${user.name.first}`" />
+              <p class="user-name">{{ user.name.first }} {{ user.name.last }}</p>
+            </div>
           </div>
 
           <!-- The Right Page -->
           <div class="page right-page">
-            <pre v-if="userArray">{{ JSON.stringify(userArray, null, 2) }}</pre>
+            <!-- <pre v-if="userArray">{{ JSON.stringify(userArray, null, 2) }}</pre> -->
           </div>
 
         </div> <!-- end .book -->
@@ -50,34 +55,35 @@
 </template>
 
 <script setup lang="ts">
-import { RouterView, useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { onMounted, ref, computed } from 'vue'
 import { RouteName } from '@/enum/router-name'
-//import { type UserInfo } from '@/interface/detailed-info'
-const numPhotos = ref();
+import { storeToRefs } from 'pinia';
+import { userInfoStore } from './stores/info-store';
 
 
-const userPerPage = async () => {
-  //fetch number of users
-  const response = await fetch("https://randomuser.me/api/?results=" + numPhotos.value);
-  //get the actual data array (no return 'Promise')
-  const data = await response.json();
-  //get the results array
-  const userArray = data.results
-  console.table(userArray)
+const numPhotosToFetch = ref();
+const infoStore = userInfoStore();
+
+
+const { userList } = storeToRefs(infoStore)
+const { fetchUsers } = infoStore;
+const userPerPage = () => {
+  fetchUsers(numPhotosToFetch.value)
 }
+
+const displayedUsers = computed(() => {
+  return userList.value.slice(0, numPhotosToFetch.value)
+})
 
 
 
 
 // 1. Get the router instance
 const router = useRouter()
-
 // 2. Use the onMounted lifecycle hook
 onMounted(() => {
-
   router.push({ name: RouteName.PROFILEDETAILS })
-
 
 })
 </script>
