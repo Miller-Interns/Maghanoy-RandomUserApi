@@ -60,18 +60,18 @@ export interface UserPicture{
 }
 
 export interface User{
-    userGender: Gender,
-    userName:UserName;
-    userlocation:UserLocation,
-    userEmail: string,
-    userLogin:UserlogIn,
-    userDob:UserDob,
-    userRegistered:UserRegistered,
-    userPhone: string
-    userCell: string,
-    uerId: UserId,
-    userPicture: UserPicture,
-    userNat: string
+    gender: Gender,
+    name:UserName;
+    location:UserLocation,
+    email: string,
+    login:UserlogIn,
+    dob:UserDob,
+    registered:UserRegistered,
+    phone: string
+    cell: string,
+    id: UserId,
+    picture: UserPicture,
+    nat: string
 }
 
 export interface UserInfo{
