@@ -1,191 +1,172 @@
 <template>
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
+  <div class="book-container">
+    <div class="book-cover">
+      <div class="book">
 
-  <body>
+        <div class="page left-page">
+          <h2>JUST SEARCH!</h2>
 
-    <!--
-      This container is used for positioning the book and its cover.
-      The `perspective` property in the CSS can be used for 3D transforms.
-    -->
-    <div class="book-container">
-
-      <!--
-          This div acts as the hard cover of the book, sitting behind the pages.
-          It's slightly larger than the pages to create a border effect.
-        -->
-      <div class="book-cover">
-
-        <!--
-              This is the main container for the two visible pages.
-              It uses flexbox to place the pages side-by-side.
-            -->
-        <div class="book">
-
-          <!-- The Left Page -->
-          <div class="page left-page">
-            <h2>JUST SEARCH!</h2>
-            <input type='number' v-model='numPhotosToFetch' placeholder='Number of Photos'>
-            <button @click='userPerPage' class='submit' value="submit">
+          <!-- CONTROL PANEL -->
+          <div class="controls">
+            <input type='number' v-model='numPhotosToFetch' placeholder='Number of Users' />
+            <button @click="handleFetch(numPhotosToFetch)" :disabled="isLoading">
+              Fetch Random
             </button>
-
-
-            <div v-for="user in displayedUsers" :key="user.login.uuid" class="picture-card">
-              <img :src="user.picture.large" :alt="`Photo of ${user.name.first}`" />
-              <p class="user-name">{{ user.name.first }} {{ user.name.last }}</p>
-            </div>
+          </div>
+          <div class="filter">
+            <button @click="handleFetch(numPhotosToFetch, 'female')" :disabled="isLoading">
+              Fetch Females
+            </button>
+            <button @click="handleFetch(numPhotosToFetch, 'male')" :disabled="isLoading">
+              Fetch Males
+            </button>
           </div>
 
-          <!-- The Right Page -->
-          <div class="page right-page">
-            <!-- <pre v-if="userArray">{{ JSON.stringify(userArray, null, 2) }}</pre> -->
-          </div>
+          <hr style="border-color: var(--highlight-color); border-style: dashed; margin: 2rem 0;" />
 
-        </div> <!-- end .book -->
-      </div> <!-- end .book-cover -->
-    </div> <!-- end .book-container -->
+          <PaginationLogic />
+        </div>
 
-  </body>
-
-
-
+        <!-- The Right Page -->
+        <div class="page right-page">
+          <h2>Details</h2>
+          <p>Click a user to see their details here!</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { onMounted, ref, computed } from 'vue'
-import { RouteName } from '@/enum/router-name'
-import { storeToRefs } from 'pinia';
-import { userInfoStore } from './stores/info-store';
+import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { userInfoStore } from './stores/info-store'
+import PaginationLogic from '@/components/pagination-logic.vue'
 
 
-const numPhotosToFetch = ref();
-const infoStore = userInfoStore();
 
-
-const { userList } = storeToRefs(infoStore)
-const { fetchUsers } = infoStore;
-const userPerPage = () => {
-  fetchUsers(numPhotosToFetch.value)
+const infoStore = userInfoStore()
+const { isLoading, userList } = storeToRefs(infoStore)
+const numPhotosToFetch = ref(0)
+if (numPhotosToFetch.value === 0) {
+  userList.value = [];
+  localStorage.removeItem('userList');
 }
 
-const displayedUsers = computed(() => {
-  return userList.value.slice(0, numPhotosToFetch.value)
-})
+function handleFetch(count: number, gender?: 'female' | 'male') {
+  infoStore.fetchUsers(count, gender)
+
+}
 
 
-
-
-// 1. Get the router instance
-const router = useRouter()
-// 2. Use the onMounted lifecycle hook
 onMounted(() => {
-  router.push({ name: RouteName.PROFILEDETAILS })
+
+  infoStore.loadFromStorage()
+  if (userList.value.length === 0) {
+    handleFetch(numPhotosToFetch.value)
+  }
 
 })
 </script>
 
 
 
-
 <style>
 :root {
   --page-color: #fdfaf3;
-  --cover-color: #a0522d;
-  /* A sienna/leather color */
-  --text-color: #333;
-  --shadow-color: rgba(0, 0, 0, 0.4);
+  --cover-color: #6a360f;
+  --text-color: #3d352a;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --spine-shadow-color: rgba(0, 0, 0, 0.4);
+  --highlight-color: #8b4513;
+
 }
 
 body {
   display: flex;
   justify-content: center;
+  align-items: center;
   min-height: 100vh;
-  min-width: 100vw;
+  background-image: url('https://www.transparenttextures.com/patterns/wood-grain.png');
   background-color: #3d352a;
-  /* Darker wood background */
   font-family: 'Garamond', 'Georgia', serif;
   margin: 0;
+  padding: 2rem;
   box-sizing: border-box;
 }
 
+
 .book-container {
-  perspective: 1000px;
-  width: 100%;
-  /* Needed for 3D effects if you add them */
+  perspective: 1500px;
+  max-width: 1400px;
+  width: 90vw;
+
 }
 
+
 .book-cover {
-  /* Use padding to create the cover border instead of fixed dimensions */
-  padding: 20px;
+  padding: 25px;
+  background-image: url('https://www.transparenttextures.com/patterns/leather.png');
   background-color: var(--cover-color);
-  border-radius: 15px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  border-radius: 10px 15px 15px 10px;
+  box-shadow: 0 20px 40px var(--shadow-color), inset 0 0 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.5s ease;
 }
 
 .book {
   display: flex;
-  width: 100%;
-  height: 100%;
+  min-height: 80vh;
   position: relative;
-  /* Stacks on top of the cover */
 }
 
 .page {
   flex: 1;
   padding: 2em 3em;
+  background-image: url('https://www.transparenttextures.com/patterns/paper.png');
   background-color: var(--page-color);
   box-sizing: border-box;
   overflow-y: auto;
-  /* Allow scrolling if content is long */
   position: relative;
-  /* Needed for the pseudo-element curl */
 }
 
 .left-page {
-  box-shadow: inset -7px 0px 15px -7px var(--shadow-color);
+  box-shadow: inset -10px 0px 18px -10px var(--spine-shadow-color);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
 
 .right-page {
-  box-shadow: inset 7px 0px 15px -7px var(--shadow-color);
+  box-shadow: inset 10px 0px 18px -10px var(--spine-shadow-color);
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-/* Page Curl Effect */
 .page::after {
   content: '';
   position: absolute;
   bottom: 20px;
   right: 20px;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, var(--page-color) 50%, #ccc 50%, #999);
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, transparent 50%, #ccc 51%, #999);
   box-shadow: -5px 5px 15px var(--shadow-color);
-  transform: rotate(-25deg) skew(-20deg);
-  transition: all 0.3s ease;
+  transform: rotate(-30deg) skew(-25deg);
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .page:hover::after {
-  transform: rotate(-15deg) skew(-10deg);
-  box-shadow: -10px 10px 25px var(--shadow-color);
+  transform: translateY(-10px) translateX(10px) rotate(-20deg) skew(-15deg);
+  box-shadow: -15px 15px 30px var(--shadow-color);
 }
 
-/* Typography */
 h2 {
   color: var(--text-color);
-  border-bottom: 2px solid var(--cover-color);
+  border-bottom: 2px solid var(--highlight-color);
   padding-bottom: 10px;
   margin-top: 0;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 p {
@@ -194,9 +175,115 @@ p {
   font-size: 1.1em;
 }
 
-/* Scrollbar styling for a better look */
+.controls,
+.filter {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+input[type="number"] {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #c9b7a5;
+  background-color: #fdfdfb;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  width: 150px;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--highlight-color);
+  box-shadow: 0 0 8px rgba(139, 69, 19, 0.4);
+}
+
+button {
+  padding: 10px 20px;
+  border: 1px solid var(--cover-color);
+  background-color: var(--highlight-color);
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--cover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+button:disabled {
+  background-color: #b0a091;
+  border-color: #9c8c7c;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.status-message {
+  padding: 1rem;
+  background: rgba(224, 215, 198, 0.5);
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 1rem;
+  border: 1px dashed var(--highlight-color);
+}
+
+.status-message.error {
+  background: rgba(255, 221, 221, 0.7);
+  color: #d8000c;
+  border-style: solid;
+}
+
+.gallery-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.picture-card {
+  border: 5px solid white;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  background-color: white;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.picture-card:hover {
+  transform: scale(1.05) rotate(2deg);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.picture-card img {
+  display: block;
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+}
+
+.user-name {
+  margin: 0;
+  padding: 0.5rem;
+  font-size: 0.9em;
+  color: #333;
+}
+
+
 .page::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 .page::-webkit-scrollbar-track {
@@ -204,8 +291,19 @@ p {
 }
 
 .page::-webkit-scrollbar-thumb {
-  background-color: #ccc;
+  background-color: #c9b7a5;
   border-radius: 20px;
   border: 2px solid var(--page-color);
+}
+
+.page::-webkit-scrollbar-thumb:hover {
+  background-color: #b8a591;
+}
+
+.right-page p {
+  color: #888;
+  text-align: center;
+  font-style: italic;
+  margin-top: 2rem;
 }
 </style>
