@@ -6,9 +6,18 @@ import type { User } from '@/interface/detailed-info'
 export const userInfoStore = defineStore('userInfo', () => {
 
   const userList = ref<User[]>([])
+  const selectedUser = ref<User | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
+   function selectUser(user: User | null) {
+
+    if (selectedUser.value && user && selectedUser.value.login.uuid === user.login.uuid) {
+      selectedUser.value = null;
+    } else {
+      selectedUser.value = user;
+    }
+  }
 
   function saveToStorage() {
     try {
@@ -35,6 +44,7 @@ export const userInfoStore = defineStore('userInfo', () => {
     if (!userCount || userCount <= 0) {
       console.log("Fetch count is zero. Clearing user list and localStorage.");
       userList.value = [];
+      selectedUser.value = null
       localStorage.removeItem('userList');
       return; 
     }
@@ -74,8 +84,11 @@ export const userInfoStore = defineStore('userInfo', () => {
     userList,
     isLoading,
     error, 
+    selectedUser,
     fetchUsers, 
     loadFromStorage,
+    selectUser
+    
     
   }
 })

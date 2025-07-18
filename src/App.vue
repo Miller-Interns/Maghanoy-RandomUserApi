@@ -31,7 +31,9 @@
         <!-- The Right Page -->
         <div class="page right-page">
           <h2>Details</h2>
-          <p>Click a user to see their details here!</p>
+          <p>
+            <profileDetails />
+          </p>
         </div>
       </div>
     </div>
@@ -43,6 +45,7 @@ import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { userInfoStore } from './stores/info-store'
 import PaginationLogic from '@/components/pagination-logic.vue'
+import profileDetails from './views/profile-details.vue'
 
 
 
@@ -100,7 +103,7 @@ body {
 .book-container {
   perspective: 1500px;
   max-width: 1400px;
-  width: 90vw;
+  width: 100vw;
 
 }
 
@@ -112,12 +115,14 @@ body {
   border-radius: 10px 15px 15px 10px;
   box-shadow: 0 20px 40px var(--shadow-color), inset 0 0 15px rgba(0, 0, 0, 0.3);
   transition: transform 0.5s ease;
+  width: 82vw;
 }
 
 .book {
   display: flex;
-  min-height: 80vh;
+  height: 100vh;
   position: relative;
+  width: 80vw;
 }
 
 .page {
@@ -134,12 +139,15 @@ body {
   box-shadow: inset -10px 0px 18px -10px var(--spine-shadow-color);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
+  display: flex;
+  flex-direction: column;
 }
 
 .right-page {
   box-shadow: inset 10px 0px 18px -10px var(--spine-shadow-color);
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+
 }
 
 .page::after {
@@ -149,16 +157,9 @@ body {
   right: 20px;
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, transparent 50%, #ccc 51%, #999);
-  box-shadow: -5px 5px 15px var(--shadow-color);
-  transform: rotate(-30deg) skew(-25deg);
-  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
 }
 
-.page:hover::after {
-  transform: translateY(-10px) translateX(10px) rotate(-20deg) skew(-15deg);
-  box-shadow: -15px 15px 30px var(--shadow-color);
-}
 
 h2 {
   color: var(--text-color);
@@ -182,6 +183,7 @@ p {
   margin-bottom: 1.5rem;
   align-items: center;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 input[type="number"] {
@@ -241,69 +243,5 @@ button:disabled {
   background: rgba(255, 221, 221, 0.7);
   color: #d8000c;
   border-style: solid;
-}
-
-.gallery-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  padding-top: 1rem;
-}
-
-.picture-card {
-  border: 5px solid white;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  background-color: white;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.picture-card:hover {
-  transform: scale(1.05) rotate(2deg);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  z-index: 10;
-}
-
-.picture-card img {
-  display: block;
-  width: 128px;
-  height: 128px;
-  object-fit: cover;
-}
-
-.user-name {
-  margin: 0;
-  padding: 0.5rem;
-  font-size: 0.9em;
-  color: #333;
-}
-
-
-.page::-webkit-scrollbar {
-  width: 10px;
-}
-
-.page::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.page::-webkit-scrollbar-thumb {
-  background-color: #c9b7a5;
-  border-radius: 20px;
-  border: 2px solid var(--page-color);
-}
-
-.page::-webkit-scrollbar-thumb:hover {
-  background-color: #b8a591;
-}
-
-.right-page p {
-  color: #888;
-  text-align: center;
-  font-style: italic;
-  margin-top: 2rem;
 }
 </style>

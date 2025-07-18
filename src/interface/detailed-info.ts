@@ -23,7 +23,7 @@ export interface UserLocation{
     }
     timezone:{
         offset:string,
-        decription: string
+        description: string
     }
 }
 
@@ -74,14 +74,3 @@ export interface User{
     nat: string
 }
 
-export interface UserInfo{
-    results: User[],
-    info:{
-
-     seed: string,
-     results: number,
-      page: number,
-      version: number
-    }
-
-}
