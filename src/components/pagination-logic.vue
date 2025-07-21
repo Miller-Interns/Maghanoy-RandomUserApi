@@ -123,8 +123,6 @@ watch(userList, () => {
 }
 
 
-
-
 .paginatioControl button {
     padding: 8px 16px;
     border: 1px solid #c9b7a5;

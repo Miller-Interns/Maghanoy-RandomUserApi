@@ -13,8 +13,6 @@
             <button @click="handleFetch(numPhotosToFetch)" :disabled="isLoading">
               Fetch Random
             </button>
-          </div>
-          <div class="filter">
             <button @click="handleFetch(numPhotosToFetch, 'female')" :disabled="isLoading">
               Fetch Females
             </button>
@@ -176,8 +174,8 @@ p {
   font-size: 1.1em;
 }
 
-.controls,
-.filter {
+.controls {
+  margin-top: 10px;
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
@@ -185,6 +183,7 @@ p {
   flex-wrap: wrap;
   justify-content: center;
 }
+
 
 input[type="number"] {
   padding: 10px;
